@@ -48,6 +48,8 @@ class GoodDog
   def to_s
       "This dog's name is #{name} and it is #{age} in dog years."
   end
+
+  puts self
 end
 
 
@@ -116,16 +118,44 @@ p sparky
 # 3. You want to create a nice interface that allows you to accurately describe the action you want your program to perform.
 #     Create a method called spray_paint that can be called on an object and will modify the color of the car.
 
-class MyCar
-    attr_accessor :color, :speed
+module Cargo
+  def cargo_weight(kilo)
+    kilo < 2 ? "The #{car_name} has a total cargo weight of #{kilo} kilo." : "The #{car_name} has a total cargo weight of #{kilo} kilos."
+  end
+end
+
+
+class Vehicle
+    attr_accessor :color, :speed, :car_name
     attr_reader :year, :model
+    @@total_vehicles = 0
 
     def initialize(yr, clr, mdl)
         @year = yr
         self.color = clr
         @model = mdl
         self.speed = 0
-        puts "\nA #{year} #{color} #{model} has appeared."
+        self.car_name = "#{self.year} #{self.color} #{self.model}"
+        puts "\nA #{car_name} has appeared."
+        @@total_vehicles += 1
+    end
+      
+    def spray_paint=(new_color)
+        self.color = new_color
+        puts "Your #{year} #{model} is now #{self.color}."
+        self.car_name = "#{self.year} #{self.color} #{self.model}"
+    end
+
+    def to_s
+        puts "This is a #{self.car_name}."  
+    end
+
+    def self.total_vehicles
+        if @@total_vehicles < 2
+            puts "We have a total of #{@@total_vehicles} vehicle."
+        else
+            puts "We have a total of #{@@total_vehicles} vehicles."
+        end
     end
 
     def accelerate=(num)
@@ -143,14 +173,33 @@ class MyCar
         puts "You turned the engine off."
     end
 
-    def spray_paint=(new_color)
-        self.color = new_color
-        puts "Your #{year} #{model} is now #{color}."
+    def info
+        puts "A #{car_name}"
     end
 
-    def info
-        puts "A #{year} #{color} #{model}"
+    def gas_mileage(gallons, miles)
+        puts "The #{self.car_name}'s gas mileage: #{miles/gallons}"  
     end
+
+    def age
+        "#{car_name}'s age is #{how_old} years old."  
+    end
+
+    private
+
+    def how_old
+        Time.now.year - self.year  
+    end
+end
+
+
+class MyCar < Vehicle
+    SIZE = "small"
+end
+
+class MyTruck < Vehicle
+    SIZE = "medium"
+    include Cargo
 end
 
 vios = MyCar.new(2020, "Blue", "Toyoto Vios")
@@ -160,3 +209,39 @@ vios.brake = 30
 vios.off
 vios.spray_paint = "Pink"
 vios.info
+vios.gas_mileage(5, 60)
+vios.to_s
+puts vios.age
+
+ranger = MyTruck.new(2019, "Black", "Ford Ranger")
+ranger.info
+puts ranger.cargo_weight(400)
+
+Vehicle.total_vehicles
+
+puts "\n---Vehicles method lookup---\n#{Vehicle.ancestors}"
+puts "\n---MyCar method lookup---\n#{MyCar.ancestors}"
+puts "\n---Vehicles method lookup---\n#{MyTruck.ancestors}"
+
+class Student  
+    attr_accessor :name
+    def initialize(name, grade)
+        self.name = name
+        @grade = grade
+        puts "\nYou entered #{name}, who has a grade of #{grade}."
+    end
+
+    def better_grade_than?(other)
+        true if self.grade > other.grade
+    end
+    protected
+
+    attr_reader :grade
+
+    
+end
+
+joe = Student.new("Joe", 88)
+bob = Student.new("Bob", 90)
+
+puts "Well done, Bob!" if bob.better_grade_than?(joe)
