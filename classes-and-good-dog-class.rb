@@ -81,7 +81,7 @@ paws = Cat.new("Paws")
 
 p sparky.swim
 p neemo.swim
-# paws.swim
+p paws.swim
 
 # p BadDog.new(2,"bear")
 
